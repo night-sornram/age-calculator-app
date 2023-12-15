@@ -1,113 +1,183 @@
+"use client"
 import Image from 'next/image'
+import { useState } from 'react'
 
 export default function Home() {
+  let leaf : boolean = false;
+  let checkday = 0;
+  let day30 = [4,6,9,11]
+  let day31 = [1,3,5,7,8,10,12]
+  const [showday,setShowDay] = useState("--")
+  const [showmonth,setShowMonth] = useState("--")
+  const [showyear,setShowYear] = useState("--")
+  const [day,setDay] = useState("")
+  const [month,setMonth] = useState("")
+  const [year,setYear] = useState("")
+  const [daystatus,setDayStatus] = useState("")
+  const [monthstatus,setMonthStatus] = useState("")
+  const [yearstatus,setYearStatus] = useState("")
+  function checkLeapYear(year : number) {
+    if ((0 == year % 4) && (0 != year % 100) || (0 == year % 400)) {
+        leaf = true
+    } else {
+        leaf = false
+    }
+  }
+
+  function checkValid(){
+    checkLeapYear(parseInt(year))
+    if(day30.includes(parseInt(month))){
+      checkday = 30;
+    }
+    else if(day31.includes(parseInt(month))){
+      checkday = 31;
+    }else{
+      if(leaf === true){
+        checkday = 29;
+      }
+      else{
+        checkday = 28;
+      }
+    }
+
+  }
+  function show(){
+    var date = new Date();
+      var d2 = date.getDate();
+      var m2 = 1 + date.getMonth();
+      var y2 = date.getFullYear();
+      var mon = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+      if(parseInt(day) > d2){
+        d2 = d2 + mon[m2 - 1];
+        m2 = m2 - 1;
+      }
+      if(parseInt(month) > m2){
+        m2 = m2 + 12;
+        y2 = y2 - 1;
+      }
+      var d = d2 - parseInt(day);
+      var m = m2 - parseInt(month);
+      var y = y2 - parseInt(year);
+      setShowDay(d.toString());
+      setShowMonth(m.toString());
+      setShowYear(y.toString());
+
+  }
+  
+  function c(){
+    show()
+    if( day !== "" && month !== "" && year !== "" && parseInt(month) <= 12 && parseInt(year) <= new Date().getFullYear() && parseInt(day) <= 31  ){
+      checkValid()
+      
+      if(parseInt(day) > checkday){
+        setDayStatus("invalid2")
+        setMonthStatus("invalid2")
+        setYearStatus("invalid2")
+        setShowDay("--");
+        setShowMonth("--");
+        setShowYear("--");
+      }
+      else{
+        show()
+        setDayStatus("valid")
+        setMonthStatus("valid")
+        setYearStatus("valid")
+      }
+    }
+    else{
+      setShowDay("--");
+      setShowMonth("--");
+      setShowYear("--");
+      if(day=== ""){
+        setDayStatus("blank")
+      }
+      else if( parseInt(day) > 31){
+        setDayStatus("invalid")
+      }
+      else{
+        setDayStatus("valid")
+      }
+      if(month=== ""){
+        setMonthStatus("blank")
+      }
+      else if( parseInt(month) > 12){
+        setMonthStatus("invalid")
+      }
+      else{
+        setMonthStatus("valid")
+      }
+      if(year=== ""){
+        setYearStatus("blank")
+      }
+      else if( parseInt(year) > new Date().getFullYear()){
+        setYearStatus("invalid")
+      }
+      else{
+        setYearStatus("valid")
+      }
+    }
+    
+  }
+
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
+    <div className=' w-screen h-screen  flex justify-center items-center'>
+      <div className='  p-10 w-11/12 md:w-[48rem]  bg-white rounded-xl rounded-br-[170px]'>
+        <div className='flex flex-row'>
+          <div className=' flex flex-col'>
+            <div className={daystatus === "blank" || daystatus === "invalid" || daystatus === "invalid2" ? "dateeror" : "date"}>
+              D A Y
+            </div>
+            <input type="number" value={day} onChange={(e)=>{setDay(e.currentTarget.value)}} placeholder='DD' className={daystatus === "blank" || daystatus === "invalid"  || daystatus === "invalid2" ? "e" : "i"} />
+            <div className={daystatus === "blank" || daystatus === "invalid" || daystatus === "invalid2" ? "statuserror" : "status"} >
+              {daystatus === "blank" ? "This field is required" : ( daystatus === "invalid" ? "Must be a valid day " : (daystatus === "invalid2" ? "Must be a valid date" : "")) }
+            </div>
+          </div>
+          <div className=' ml-3 md:ml-5 flex flex-col'>
+            <div className={(monthstatus === "blank" || monthstatus === "invalid" || monthstatus === "invalid2" )? "dateeror" : "date"}>
+              M O N T H
+            </div>
+            <input type="number" value={month} onChange={(e)=>{setMonth(e.currentTarget.value)}} placeholder='MM' className={monthstatus === "blank" || monthstatus === "invalid" || monthstatus === "invalid2"  ? "e" : "i"} />
+            <div className={monthstatus === "blank" || monthstatus === "invalid" || monthstatus === "invalid2" ? "statuserror" : "status"}>
+              {monthstatus === "blank" ? "This field is required" : ( monthstatus === "invalid" ? "Must be a valid month " : "") }
+            </div>
+          </div>
+          <div className=' ml-3 md:ml-5 flex flex-col'>
+            <div className={yearstatus === "blank" || yearstatus === "invalid" || yearstatus === "invalid2" ? "dateeror" : "date"}>
+              Y E A R
+            </div>
+            <input type="number" value={year} onChange={(e)=>{setYear(e.currentTarget.value)}} placeholder='YYYY' className={yearstatus === "blank" || yearstatus === "invalid" || yearstatus === "invalid2" ? "e" : "i"} />
+            <div className={yearstatus === "blank" || yearstatus === "invalid" || yearstatus === "invalid2" ? "statuserror" : "status"}>
+              {yearstatus === "blank" ? "This field is required" : ( yearstatus === "invalid" ? "Must be in the past " : "") }
+            </div>
+          </div>     
+        </div>
+        <div className=' w-12/12  mt-5 flex flex-row justify-center items-center  relative'>
+          <svg height="50" className=' absolute z-0 md:static stroke-custom-400 stroke-[3px] w-full mt-10'>
+            <line x1="0" y1="0" x2="700" y2="0"/>
+
+          </svg>
+          <button onClick={c} 
+          className=' z-10 md:top-0 right-2/5 right-2/4 md:right-0 static md:absolute w-14 h-14 md:w-20 md:h-20 rounded-full bg-custom-100 flex justify-center items-center'>
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            src={"/images/icon-arrow.svg"}
+            width={46}
+            height={44}
+            alt='arrow'/>
+          </button>
+        </div>
+        <div className=' text-5xl md:text-7xl italic font-extrabold'>
+          <div>
+            <span className=' text-custom-100'>{showyear}</span> years
+          </div>
+          <div>
+            <span className=' text-custom-100'>{showmonth}</span> months
+          </div>
+          <div>
+            <span className=' text-custom-100'>{showday}</span> days
+          </div>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+    </div>
+  )}

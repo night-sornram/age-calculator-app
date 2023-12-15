@@ -2,26 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}
+
+@layer base{
+  .date{
+    @apply text-custom-500 font-bold;
   }
+  .dateeror{
+    @apply text-custom-200 font-bold
+  }
+  .status{
+    @apply hidden;
+  }
+  .statuserror{
+    @apply mt-1 md:text-base text-xs text-custom-200 italic;
+  }
+  .i{
+    @apply mt-1 border-2 p-3 rounded-lg font-extrabold text-3xl w-24 md:w-40 focus:outline-none focus:border-custom-100  border-custom-400;
+  }
+  .e{
+    @apply mt-1 border-2 p-3 rounded-lg font-extrabold text-3xl w-24 md:w-40 focus:outline-none focus:border-custom-200  border-custom-200
+  }
+
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+body{
+  background-color:  hsl(0, 0%, 94%);
 }
